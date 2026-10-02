@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>生產用料追溯</title>
+  <style>
+    :root{--ink:#13211d;--muted:#60716a;--line:#d9e2de;--bg:#f1f5f3;--card:#fff;--green:#12664f;--green2:#e3f2ec;--red:#b42318;--warn:#936000;--shadow:0 10px 28px rgba(20,48,39,.08)}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif}header{background:#123c31;color:#fff;padding:18px max(20px,calc((100vw - 1120px)/2))}header h1{font-size:1.35rem;margin:0}header small{color:#c7dad4}main{max-width:1120px;margin:24px auto;padding:0 18px 80px}
+    .tabs{display:flex;gap:8px;margin-bottom:16px}.tab,.btn{min-height:48px;border:0;border-radius:9px;padding:11px 17px;font:inherit;font-weight:800;cursor:pointer}.tab{background:transparent;color:var(--muted)}.tab.active{background:#fff;color:var(--green);box-shadow:var(--shadow)}.btn.primary{background:var(--green);color:#fff}.btn.secondary{background:var(--green2);color:var(--green)}.btn.danger{background:#fff0ef;color:var(--red)}button:disabled{opacity:.55;cursor:not-allowed}
+    .panel{display:none}.panel.active{display:block}.hidden{display:none!important}.card,.product-item,.product-detail{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.card{padding:20px}.filters{display:grid;grid-template-columns:220px 220px auto;gap:12px;align-items:end}.field{display:flex;flex-direction:column;gap:6px}label{font-size:.9rem;font-weight:800}input,select{width:100%;min-height:48px;border:1px solid #aebfb8;border-radius:9px;padding:10px 12px;background:#fff;font:inherit}input:focus,select:focus{outline:3px solid #cfe9df;border-color:var(--green)}
+    .meta{color:var(--muted);margin:18px 0 10px}.product-item{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px;margin-bottom:12px}.product-info{display:grid;grid-template-columns:100px 1fr 145px;gap:18px;align-items:center}.product-info small,.muted{display:block;color:var(--muted)}.product-name{font-size:1.08rem;font-weight:800}.progress{height:8px;background:#e1e9e5;border-radius:99px;overflow:hidden;margin-top:7px}.progress span{display:block;height:100%;background:var(--green)}.pill{display:inline-flex;border-radius:999px;padding:5px 10px;font-size:.82rem;font-weight:800}.todo{background:#edf1ef;color:#53615c}.doing{background:#fff2c7;color:#745400}.done{background:#dff2e8;color:#116149}
+    .detail-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.product-head{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;background:#edf5f1;padding:16px 18px;border-radius:14px 14px 0 0}.product-head small{display:block;color:var(--muted)}.bom{padding:16px 18px}.bom h2{font-size:1rem}.material{padding:14px 0;border-top:1px solid var(--line)}.material-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.material-title{font-weight:800}.material-title small{display:block;color:var(--muted);font-weight:400}.lot{display:grid;grid-template-columns:1fr 1fr 1fr 1.25fr auto;gap:10px;align-items:end;background:#f7faf8;border-radius:9px;padding:10px;margin-top:9px}.batch{font-family:ui-monospace,Consolas,monospace;font-size:.82rem;color:var(--green)}.total{margin-top:8px;font-size:.88rem;color:var(--green);font-weight:800}.total.warn{color:var(--warn)}.sticky{position:sticky;bottom:0;z-index:10;display:flex;justify-content:space-between;gap:12px;padding:12px 0;background:rgba(241,245,243,.96);backdrop-filter:blur(8px)}.sticky>div{display:flex;gap:10px}.save-status{color:var(--muted);align-self:center;font-size:.88rem}
+    .search{display:grid;grid-template-columns:180px 1fr auto;gap:10px}.result{border:1px solid var(--line);border-radius:11px;padding:16px;margin-top:12px}.result-head{display:flex;justify-content:space-between;gap:12px}.record-title{font-weight:800}.chips{display:flex;gap:6px}.chip{background:var(--green2);color:var(--green);border-radius:999px;padding:4px 9px;font-size:.82rem}.usage{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}.usage th,.usage td{text-align:left;padding:9px 6px;border-top:1px solid var(--line)}.empty{text-align:center;color:var(--muted);padding:30px}.toast{position:fixed;right:18px;bottom:80px;z-index:30;background:#172d26;color:#fff;padding:12px 16px;border-radius:9px;opacity:0;transform:translateY(10px);transition:.2s}.toast.show{opacity:1;transform:none}
+    @media(max-width:760px){.filters,.product-info,.product-head,.search{grid-template-columns:1fr}.product-item{grid-template-columns:1fr}.lot{grid-template-columns:1fr}.material-top{align-items:flex-start}.sticky{flex-direction:column}.sticky>div{display:grid;grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<header><h1>生產用料追溯</h1><small>生產現場登錄系統</small></header>
+<main>
+  <nav class="tabs"><button class="tab active" data-tab="entry">生產登錄</button><button class="tab" data-tab="trace">追溯查詢</button></nav>
+  <section id="entry" class="panel active">
+    <div class="card filters">
+      <div class="field"><label>製造日期</label><input id="date" type="date"></div>
+      <div class="field"><label>生產線</label><select id="line"><option>A</option><option>B</option></select></div>
+      <button id="load" class="btn primary">載入排程</button>
+    </div>
+    <div id="listView"><div id="meta" class="meta"></div><div id="products"></div></div>
+    <form id="detailView" class="hidden">
+      <div class="detail-top"><button type="button" id="back" class="btn secondary">返回成品清單</button><span class="pill doing">填寫中</span></div>
+      <div id="detail"></div>
+      <div class="sticky"><span id="saveStatus" class="save-status">尚未變更</span><div><button type="button" id="clear" class="btn secondary">清除本品</button><button class="btn primary">完成並儲存</button></div></div>
+    </form>
+  </section>
+  <section id="trace" class="panel">
+    <div class="card"><div class="search"><select id="searchType"><option value="all">全部欄位</option><option value="product">成品批號</option><option value="material">原料批號</option></select><input id="query" placeholder="輸入成品、原料或批號"><button id="search" class="btn primary">查詢</button></div><div id="results"></div></div>
+  </section>
+</main>
+<div id="toast" class="toast" role="status"></div>
+<script>
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const toast=msg=>{const e=$('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000)};
+  const api=async(url,options={})=>{const r=await fetch(url,{headers:{'Content-Type':'application/json'},...options});if(!r.ok){let message='系統發生錯誤';try{message=(await r.json()).detail||message}catch{}throw new Error(message)}return r.json()};
+  let schedules=[],active=null,draftTimer=null;
+  const lotHtml=(lot={})=>`<div class="lot"><div class="field"><label>有效日期 *</label><input class="expiry" type="date" value="${lot.expiry_date||''}" required></div><div class="field"><label>進貨日期 *</label><input class="received" type="date" value="${lot.received_date||''}" required></div><div class="field"><label>投入重量（kg）*</label><input class="weight" inputmode="decimal" type="number" min=".001" step=".001" value="${lot.used_weight??''}" required></div><div><strong class="lot-state">待填寫批號</strong><div class="batch">—</div></div><button type="button" class="btn danger remove">刪除</button></div>`;
+
+  async function loadSchedules(){
+    try{
+      schedules=await api(`/api/schedules?production_date=${$('date').value}&production_line=${encodeURIComponent($('line').value)}`);
+      active=null;$('detailView').classList.add('hidden');$('listView').classList.remove('hidden');
+      $('meta').textContent=`${$('date').value}・${$('line').value} 線・共 ${schedules.length} 個生產品項`;
+      await renderList();
+    }catch(e){toast(e.message)}
+  }
+  async function renderList(){
+    const states=await Promise.all(schedules.map(s=>s.status==='completed'?Promise.resolve(null):api(`/api/records/${s.id}/draft`)));
+    $('products').innerHTML=schedules.map((s,i)=>{const draft=states[i]?.draft,filled=draft?.materials?.filter(m=>m.lots?.some(l=>l.expiry_date&&l.received_date&&Number(l.used_weight)>0)).length||0,total=s.bom.length,done=s.status==='completed',state=done?'done':filled?'doing':'todo',label=done?'已完成':filled?'填寫中':'未開始';return `<article class="product-item"><div class="product-info"><div><small>成品代號</small><strong>${esc(s.product_code)}</strong></div><div><div class="product-name">${esc(s.product_name)}</div><small>生產重量 ${s.planned_weight.toFixed(3)} kg・BOM ${total} 項</small><div class="progress"><span style="width:${done?100:filled/total*100}%"></span></div></div><div><span class="pill ${state}">${label}</span><small>${done?total:filled}／${total} 項</small></div></div><button type="button" class="btn ${done?'secondary':'primary'} open" data-index="${i}" ${done?'disabled':''}>${done?'已完成':'開始／繼續'}</button></article>`}).join('')||'<div class="empty">此日期與產線沒有排程</div>';
+  }
+  async function openProduct(index){
+    active=schedules[Number(index)];
+    try{
+      const response=await api(`/api/records/${active.id}/draft`),draft=response.draft;
+      $('listView').classList.add('hidden');$('detailView').classList.remove('hidden');
+      $('detail').innerHTML=`<article class="product-detail"><div class="product-head"><div><small>成品代號</small><strong>${esc(active.product_code)}</strong></div><div><small>成品名稱</small><strong>${esc(active.product_name)}</strong></div><div><small>生產重量</small><strong>${active.planned_weight.toFixed(3)} kg</strong></div></div><div class="bom"><h2>BOM 原材料</h2>${active.bom.map((m,i)=>{const lots=draft?.materials?.[i]?.lots?.length?draft.materials[i].lots:[{used_weight:m.standard_weight}];return `<div class="material" data-index="${i}" data-standard="${m.standard_weight}"><div class="material-top"><div class="material-title">${esc(m.material_code)}　${esc(m.material_name)}<small>標準用量 ${m.standard_weight.toFixed(3)} kg</small></div><button type="button" class="btn secondary add">＋ 新增批號</button></div><div class="lots">${lots.map(lotHtml).join('')}</div><div class="total"></div></div>`}).join('')}</div></article>`;
+      document.querySelectorAll('.lot').forEach(refreshLot);document.querySelectorAll('.material').forEach(updateTotal);
+      $('saveStatus').textContent=draft?'已載入暫存':'尚未變更';window.scrollTo({top:0,behavior:'smooth'});
+    }catch(e){toast(e.message)}
+  }
+  function refreshLot(row){const material=row.closest('.material'),m=active.bom[Number(material.dataset.index)],expiry=row.querySelector('.expiry').value,received=row.querySelector('.received').value;row.querySelector('.batch').textContent=expiry&&received?`${m.material_code}-${expiry.replaceAll('-','')}-${received.replaceAll('-','')}`:'—';row.querySelector('.lot-state').textContent=expiry&&received?'批號已產生':'待填寫批號';updateTotal(material)}
+  function updateTotal(material){const total=[...material.querySelectorAll('.weight')].reduce((s,e)=>s+(Number(e.value)||0),0),standard=Number(material.dataset.standard),diff=total-standard,e=material.querySelector('.total');e.textContent=Math.abs(diff)<=.001?`✓ 用量完成・${total.toFixed(3)} kg`:diff<0?`⚠ 尚差 ${Math.abs(diff).toFixed(3)} kg`:`⚠ 超出 ${diff.toFixed(3)} kg`;e.classList.toggle('warn',Math.abs(diff)>.001)}
+  function capture(){return [...document.querySelectorAll('.material')].map(material=>{const m=active.bom[Number(material.dataset.index)];return{material_code:m.material_code,lots:[...material.querySelectorAll('.lot')].map(row=>({expiry_date:row.querySelector('.expiry').value,received_date:row.querySelector('.received').value,used_weight:Number(row.querySelector('.weight').value)}))}})}
+  function queueDraft(){clearTimeout(draftTimer);$('saveStatus').textContent='暫存中…';draftTimer=setTimeout(saveDraft,450)}
+  async function saveDraft(){if(!active)return;try{const r=await api(`/api/records/${active.id}/draft`,{method:'PUT',body:JSON.stringify({materials:capture()})});$('saveStatus').textContent='已自動暫存 '+new Date(r.updated_at).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}catch(e){$('saveStatus').textContent='暫存失敗';toast(e.message)}}
+  async function complete(e){e.preventDefault();const materials=capture(),lots=materials.flatMap(m=>m.lots);if(lots.some(l=>!l.expiry_date||!l.received_date||!(l.used_weight>0)))return toast('請完整填寫所有批號資料');if(materials.some(m=>new Set(m.lots.map(l=>l.expiry_date+'|'+l.received_date)).size!==m.lots.length))return toast('相同原料不可重複相同批號');try{await api(`/api/records/${active.id}/complete`,{method:'POST',body:JSON.stringify({actual_weight:active.planned_weight,materials})});toast(active.product_name+' 已完成');await loadSchedules()}catch(err){toast(err.message)}}
+  async function clearDraft(){if(!active)return;await api(`/api/records/${active.id}/draft`,{method:'PUT',body:JSON.stringify({materials:[]})});openProduct(schedules.indexOf(active));toast('已清除本品輸入')}
+  async function search(){try{const data=await api(`/api/trace?type=${$('searchType').value}&q=${encodeURIComponent($('query').value)}`);$('results').innerHTML=data.map(r=>`<article class="result"><div class="result-head"><div><div class="record-title">${esc(r.product_name)}｜${esc(r.product_batch)}</div><span class="muted">${r.production_date}・${r.production_line} 線</span></div><div class="chips"><span class="chip">${r.actual_weight.toFixed(3)} kg</span><span class="chip">${r.materials.reduce((s,m)=>s+m.lots.length,0)} 個批號</span></div></div><table class="usage"><thead><tr><th>原料</th><th>批號</th><th>投入重量</th></tr></thead><tbody>${r.materials.flatMap(m=>m.lots.map(l=>`<tr><td>${esc(m.material_code+' '+m.material_name)}</td><td>${esc(l.material_batch)}</td><td>${l.used_weight.toFixed(3)} kg</td></tr>`)).join('')}</tbody></table></article>`).join('')||'<div class="empty">查無資料</div>'}catch(e){toast(e.message)}}
+
+  document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.tab,.panel').forEach(e=>e.classList.remove('active'));btn.classList.add('active');$(btn.dataset.tab).classList.add('active');if(btn.dataset.tab==='trace')search()});
+  $('load').onclick=loadSchedules;$('date').onchange=loadSchedules;$('line').onchange=loadSchedules;$('products').onclick=e=>{const b=e.target.closest('.open');if(b&&!b.disabled)openProduct(b.dataset.index)};$('detail').oninput=e=>{const row=e.target.closest('.lot');if(row){refreshLot(row);queueDraft()}};$('detail').onclick=e=>{const add=e.target.closest('.add'),remove=e.target.closest('.remove');if(add){const material=add.closest('.material');material.querySelector('.lots').insertAdjacentHTML('beforeend',lotHtml());updateTotal(material);queueDraft();material.querySelector('.lot:last-child .expiry').focus()}if(remove){const material=remove.closest('.material');if(material.querySelectorAll('.lot').length===1)return toast('每項原料至少需要一個批號');remove.closest('.lot').remove();updateTotal(material);queueDraft()}};$('back').onclick=async()=>{await saveDraft();active=null;$('detailView').classList.add('hidden');$('listView').classList.remove('hidden');renderList()};$('clear').onclick=clearDraft;$('detailView').onsubmit=complete;$('search').onclick=search;$('query').onkeydown=e=>{if(e.key==='Enter')search()};
+  $('date').value=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Taipei'});loadSchedules();
+</script>
+</body>
+</html>
